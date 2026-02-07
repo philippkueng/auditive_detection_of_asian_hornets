@@ -60,7 +60,14 @@ def analyze_audio_file(audio_file, start_min=0, start_sec=0, end_min=0, end_sec=
 
     # Calculate time range
     start_sample = int((start_min * 60 + start_sec) * sample_rate)
-    end_sample = int((end_min * 60 + end_sec) * sample_rate)
+
+    # If end time is not specified (both 0), process entire file from start
+    if end_min == 0 and end_sec == 0:
+        end_sample = len(audio)
+        print(f"  Processing entire file from {start_min}:{start_sec:02.0f}")
+    else:
+        end_sample = int((end_min * 60 + end_sec) * sample_rate)
+        print(f"  Processing {start_min}:{start_sec:02.0f} to {end_min}:{end_sec:02.0f}")
 
     # Extract segment
     U = audio[start_sample:end_sample]
@@ -127,21 +134,49 @@ def main():
     """
     Main function to analyze a test recording.
     """
-    # Example: analyze file 29-06-23.wav from 15:06 to 15:15
-    audio_file = 'data/29-06-23.wav'
+    import argparse
+    import os
+
+    parser = argparse.ArgumentParser(
+        description='Analyze audio recording with CCP (Continuous Cross-correlation Product)'
+    )
+    parser.add_argument('audio_file', type=str, nargs='?', default='data/29-06-23.wav',
+                        help='Path to audio file (default: data/29-06-23.wav)')
+    parser.add_argument('--start-min', type=int, default=0,
+                        help='Start time in minutes (default: 0)')
+    parser.add_argument('--start-sec', type=float, default=0,
+                        help='Start time seconds component (default: 0)')
+    parser.add_argument('--end-min', type=int, default=0,
+                        help='End time in minutes (default: 0 = entire file)')
+    parser.add_argument('--end-sec', type=float, default=0,
+                        help='End time seconds component (default: 0)')
+    parser.add_argument('--increment', type=float, default=1.0,
+                        help='Window increment in seconds (default: 1.0)')
+    parser.add_argument('--output', type=str, default=None,
+                        help='Output pickle file name (default: auto-generate from input)')
+
+    args = parser.parse_args()
 
     print("Starting CCP analysis...")
     print("=" * 60)
 
     df_x, df_y, index_array = analyze_audio_file(
-        audio_file,
-        start_min=15, start_sec=6,
-        end_min=15, end_sec=15,
-        increment_sec=1.0
+        args.audio_file,
+        start_min=args.start_min,
+        start_sec=args.start_sec,
+        end_min=args.end_min,
+        end_sec=args.end_sec,
+        increment_sec=args.increment
     )
 
     # Save results
-    output_file = '29-06-23.pkl'
+    if args.output:
+        output_file = args.output
+    else:
+        # Generate output filename from input
+        base_name = os.path.splitext(os.path.basename(args.audio_file))[0]
+        output_file = f'{base_name}.pkl'
+
     results = {
         'df_x': df_x,
         'df_y': df_y,

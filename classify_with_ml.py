@@ -71,7 +71,14 @@ def extract_features_from_audio(audio_file, start_min=0, start_sec=0,
 
     # Calculate time range
     start_sample = int((start_min * 60 + start_sec) * sample_rate)
-    end_sample = int((end_min * 60 + end_sec) * sample_rate)
+
+    # If end time is not specified (both 0), process entire file from start
+    if end_min == 0 and end_sec == 0:
+        end_sample = len(audio)
+        print(f"  Processing entire file from {start_min}:{start_sec:02.0f}")
+    else:
+        end_sample = int((end_min * 60 + end_sec) * sample_rate)
+        print(f"  Processing {start_min}:{start_sec:02.0f} to {end_min}:{end_sec:02.0f}")
 
     # Extract segment
     U = audio[start_sample:end_sample]

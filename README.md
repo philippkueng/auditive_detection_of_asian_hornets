@@ -183,18 +183,27 @@ python PCA_DFA.py
 
 ### 4. Analyze New Recordings
 
-Update the audio file path in `CCP.py`:
+Run CCP analysis on audio files:
 
-```python
-audio_file = 'data/29-06-23.wav'
-```
-
-Run CCP analysis:
 ```bash
-python CCP.py
+# Process entire file (default)
+python CCP.py data/29-06-23.wav
+
+# Process specific time segment
+python CCP.py data/29-06-23.wav \
+    --start-min 15 --start-sec 6 \
+    --end-min 15 --end-sec 15
+
+# Process from start time to end of file
+python CCP.py data/29-06-23.wav --start-min 10 --start-sec 0
+
+# Custom output filename
+python CCP.py data/my_recording.wav --output my_results.pkl
 ```
 
 **Output**: `29-06-23.pkl` (DF scores for each time window)
+
+**Note**: The time range you specify here determines what will be classified in the next step!
 
 ---
 
@@ -265,21 +274,25 @@ This will:
 Classify new audio directly without CCP step:
 
 ```bash
+# Classify entire audio file (default behavior)
+python classify_with_ml.py data/29-06-23.wav
+
 # Classify a specific time segment
 python classify_with_ml.py data/29-06-23.wav \
     --start-min 15 --start-sec 6 \
     --end-min 15 --end-sec 15 \
     --increment 1.0
 
-# Classify entire file
+# Classify from start to specific end time
 python classify_with_ml.py data/29-06-23.wav \
     --end-min 10 --end-sec 0
 
 # Custom output filename
 python classify_with_ml.py data/my_recording.wav \
-    --end-min 5 --end-sec 0 \
     --output my_results.pkl
 ```
+
+**Note**: If `--end-min` and `--end-sec` are not specified (or both are 0), the script processes the entire file from the start time.
 
 **Outputs**:
 - `*_ml_classified.pkl`: Classification results with probabilities
@@ -289,19 +302,44 @@ python classify_with_ml.py data/my_recording.wav \
 
 ### Comparing Both Approaches
 
-#### Step 1: Run Both Classifications
+#### Step 1: Run Both Classifications on Same Segment
 
 ```bash
-# Approach A (Polygon) - produces 29-06-23.pkl and 29-06-23_test_results.pkl
-python CCP.py
+# Define the segment to analyze (example: 15:06 to 15:15)
+START_MIN=15
+START_SEC=6
+END_MIN=15
+END_SEC=15
+
+# Approach A (Polygon)
+# Step 1a: Compute DF scores with CCP
+python CCP.py data/29-06-23.wav \
+    --start-min $START_MIN --start-sec $START_SEC \
+    --end-min $END_MIN --end-sec $END_SEC
+
+# Step 1b: Classify using polygons (produces 29-06-23_test_results.pkl)
 python test_recordings.py --file 29-06-23.pkl
 
-# Approach B (ML) - produces 29-06-23_ml_classified.pkl
+# Approach B (ML)
+# Step 2: Train ML model (if not already trained)
 python train_ml_classifiers.py
+
+# Step 3: Classify with ML using SAME segment (produces 29-06-23_ml_classified.pkl)
 python classify_with_ml.py data/29-06-23.wav \
-    --start-min 15 --start-sec 6 \
-    --end-min 15 --end-sec 15
+    --start-min $START_MIN --start-sec $START_SEC \
+    --end-min $END_MIN --end-sec $END_SEC
 ```
+
+**Alternative: Process Entire File**
+
+```bash
+# Both approaches on entire file
+python CCP.py data/29-06-23.wav  # Entire file
+python test_recordings.py --file 29-06-23.pkl
+python classify_with_ml.py data/29-06-23.wav  # Entire file
+```
+
+**Critical**: Both approaches **must process the same time segment** for meaningful comparison!
 
 #### Step 2: Compare Results Visually
 
