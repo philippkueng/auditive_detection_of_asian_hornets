@@ -1,5 +1,6 @@
 hornet_python/data/*.wav
 .idea
 hornet_python/venv
+hornet_python/data
 .DS_Store
 __pycache__
