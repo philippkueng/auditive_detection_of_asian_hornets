@@ -18,6 +18,21 @@ This system uses a pipeline based on 2D Fourier Transform analysis, Principal Co
 
 ![Reproduced classification result](classification_result.png)
 
+## ESP32 Embedded Implementation
+
+**NEW**: This project now includes a complete ESP32 implementation for real-time hornet detection on embedded hardware!
+
+- **Location**: `../hornet_esp32/`
+- **Features**:
+  - Real-time audio processing with I2S microphone
+  - Polygon-based classification on-device
+  - Serial console alerts for hornet detections
+  - ~4-6 second detection latency
+- **Hardware**: ESP32 + INMP441 microphone (~$10 total)
+- **Quick Start**: See `hornet_esp32/QUICKSTART.md`
+
+This allows deployment of the trained detection model in the field without requiring a computer!
+
 ## Installation
 
 ### Prerequisites

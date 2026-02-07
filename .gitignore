@@ -1,5 +1,5 @@
-data/*.wav
+hornet_python/data/*.wav
 .idea
-venv
+hornet_python/venv
 .DS_Store
 __pycache__
