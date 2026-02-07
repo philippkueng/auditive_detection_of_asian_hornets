@@ -1,6 +1,6 @@
 # Hornet Detection and Classification System (Python)
 
-Python translation of the MATLAB-based acoustic detection and classification system for Asian hornets (*Vespa velutina*), distinguishing them from honeybees and background noise.
+An llm-assisted Python translation of the MATLAB-based acoustic detection and classification system for Asian hornets (*Vespa velutina*), distinguishing them from honeybees and background noise.
 
 ## Original Research
 
@@ -9,12 +9,14 @@ Python translation of the MATLAB-based acoustic detection and classification sys
 
 ## Overview
 
-This system uses a machine learning pipeline based on 2D Fourier Transform analysis, Principal Component Analysis (PCA), and Discriminant Function Analysis (DFA) to classify audio segments into four categories:
+This system uses a pipeline based on 2D Fourier Transform analysis, Principal Component Analysis (PCA), and Discriminant Function Analysis (DFA) to classify audio segments into four categories:
 
 - **Hornets** (Asian hornets, *Vespa velutina*)
 - **Bees** (Honeybees)
 - **Winter background noise**
 - **Summer background noise**
+
+![Reproduced classification result](classification_result.png)
 
 ## Installation
 
@@ -38,10 +40,22 @@ pip install -r requirements.txt
 
 3. Create the data directory structure:
 ```bash
-mkdir -p data/audio
+mkdir -p data
 ```
 
-4. Place your audio files in `data/audio/`
+4. Place your audio files in `data/`
+
+```
+13-10-22 shotgun 2.wav
+13-10-22 shotgun.wav
+15-12-22 B_with_sound_02.wav
+15-12-22_with_sound_02.wav
+16-05-23.wav
+27-07-23.wav
+29-06-23.wav
+```
+
+Download them via the links here: https://www.sciencedirect.com/science/article/pii/S0168169925004132#s0075 (Data availability statement)
 
 ## File Descriptions
 
@@ -122,7 +136,7 @@ This is the original research approach using template matching + geometric bound
 Update file paths in `read_sound_files.py` to point to your audio files:
 
 ```python
-base_dir = "data/audio/"
+base_dir = "data/"
 ```
 
 Run the script:
@@ -172,7 +186,7 @@ python PCA_DFA.py
 Update the audio file path in `CCP.py`:
 
 ```python
-audio_file = 'data/audio/29-06-23.wav'
+audio_file = 'data/29-06-23.wav'
 ```
 
 Run CCP analysis:
